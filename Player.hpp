@@ -4,7 +4,18 @@
 #include <map>
 #include <string>
 
+enum class PlayerState { Idle, Walk };
+
 enum class Direction { Left, Right, Up, Down };
+
+struct AnimKey {
+  PlayerState state;
+  Direction dir;
+
+  bool operator<(const AnimKey &other) const {
+    return std::tie(state, dir) < std::tie(other.state, other.dir);
+  }
+};
 
 class Player {
 public:
@@ -18,9 +29,13 @@ public:
   int level{1};
   int xpToNextLevel{100};
   float attackInterval{1.0f};
+  PlayerState currentState{PlayerState::Idle};
   Direction currentDir{Direction::Down};
-  std::map<Direction, Sprite> spriteLibrary;
-  Animation idleAnim;
+
+  std::map<AnimKey, Sprite> spriteLibrary;
+  Animation animController;
+
+  bool isMoving{false};
 
   void handleInput(float dt);
   void update(float dt);

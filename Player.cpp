@@ -4,26 +4,33 @@
 
 void Player::handleInput(float dt) {
   const uint8_t *state = SDL_GetKeyboardState(nullptr);
+  isMoving = false;
 
   if (state[SDL_SCANCODE_W]) {
     y -= speed * dt;
     currentDir = Direction::Up;
+    isMoving = true;
   }
   if (state[SDL_SCANCODE_S]) {
     y += speed * dt;
     currentDir = Direction::Down;
+    isMoving = true;
   }
   if (state[SDL_SCANCODE_A]) {
     x -= speed * dt;
     currentDir = Direction::Left;
+    isMoving = true;
   }
   if (state[SDL_SCANCODE_D]) {
     x += speed * dt;
     currentDir = Direction::Right;
+    isMoving = true;
   }
 }
 
 void Player::update(float dt) {
+  const uint8_t *state = SDL_GetKeyboardState(nullptr);
+
   x = std::clamp(x, 0.0f, 800.0f - 50.0f);
   y = std::clamp(y, 0.0f, 600.0f - 50.0f);
   if (invincibilityTimer > 0) {
@@ -35,17 +42,17 @@ void Player::update(float dt) {
     xpToNextLevel += 50;
     attackInterval *= 0.9f;
   }
-  if (spriteLibrary.contains(currentDir)) {
-    idleAnim.sprite = &spriteLibrary[currentDir];
+
+  currentState = isMoving ? PlayerState::Walk : PlayerState::Idle;
+  AnimKey key{.state = currentState, .dir = currentDir};
+  if (spriteLibrary.contains(key)) {
+    animController.sprite = &spriteLibrary[key];
   }
-  idleAnim.update(dt);
+  animController.update(dt);
 }
 
 void Player::draw(SDL_Renderer *renderer) const {
-  idleAnim.draw(renderer, (int)x, (int)y, 64, 64);
-  // if (auto it = animations.find(currentDir); it != animations.end()) {
-  //   it->second.draw(renderer, (int)x, (int)y, 64, 64);
-  // }
+  animController.draw(renderer, (int)x, (int)y, 64, 64);
 }
 
 void Player::takeDamage(int damage) {

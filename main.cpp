@@ -125,37 +125,44 @@ auto main(int argc, char *argv[]) -> int {
   uint32_t lastFrameTime = SDL_GetTicks();
   auto currentState = GameState::Playing;
 
-  // Load the player texture
-  SDL_Texture *texLeft =
+  std::map<AnimKey, SDL_Texture *> loadedTextures;
+
+  loadedTextures[{PlayerState::Idle, Direction::Left}] =
       IMG_LoadTexture(renderer, "assets/player/player_idle_left.png");
-  SDL_Texture *texRight =
+  loadedTextures[{PlayerState::Idle, Direction::Right}] =
       IMG_LoadTexture(renderer, "assets/player/player_idle_right.png");
-  SDL_Texture *texUp =
+  loadedTextures[{PlayerState::Idle, Direction::Up}] =
       IMG_LoadTexture(renderer, "assets/player/player_idle_back.png");
-  SDL_Texture *texDown =
+  loadedTextures[{PlayerState::Idle, Direction::Down}] =
       IMG_LoadTexture(renderer, "assets/player/player_idle_front.png");
+
+  loadedTextures[{PlayerState::Walk, Direction::Left}] =
+      IMG_LoadTexture(renderer, "assets/player/player_walk_left.png");
+  loadedTextures[{PlayerState::Walk, Direction::Right}] =
+      IMG_LoadTexture(renderer, "assets/player/player_walk_right.png");
+  loadedTextures[{PlayerState::Walk, Direction::Up}] =
+      IMG_LoadTexture(renderer, "assets/player/player_walk_back.png");
+  loadedTextures[{PlayerState::Walk, Direction::Down}] =
+      IMG_LoadTexture(renderer, "assets/player/player_walk_front.png");
 
   Player player{
       .x = 400.0f,
       .y = 300.0f,
   };
 
-  player.spriteLibrary[Direction::Left] = {.texture = texLeft,
-                                           .frameWidth = 32,
-                                           .frameHeight = 32,
-                                           .totalFrames = 9};
-  player.spriteLibrary[Direction::Right] = {.texture = texRight,
-                                            .frameWidth = 32,
-                                            .frameHeight = 32,
-                                            .totalFrames = 9};
+  for (auto const &[key, tex] : loadedTextures) {
+    if (tex) {
+      player.spriteLibrary[key] = Sprite{.texture = tex,
+                                         .frameWidth = 32,
+                                         .frameHeight = 32,
+                                         .totalFrames = 4};
+    }
+  }
+  player.animController.frameDuration = 0.12f;
+  player.animController.sprite =
+      &player.spriteLibrary[{PlayerState::Idle, Direction::Right}];
 
-  player.spriteLibrary[Direction::Up] = {
-      .texture = texUp, .frameWidth = 32, .frameHeight = 32, .totalFrames = 9};
-  player.spriteLibrary[Direction::Down] = {.texture = texDown,
-                                           .frameWidth = 32,
-                                           .frameHeight = 32,
-                                           .totalFrames = 9};
-  player.idleAnim.frameDuration = 0.12f;
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0");
 
   while (isRunning) {
     uint32_t currentFrameTime = SDL_GetTicks();
