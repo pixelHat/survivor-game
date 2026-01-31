@@ -235,6 +235,23 @@ auto main(int argc, char *argv[]) -> int {
         e.update(player.x, player.y, dt);
       }
 
+      for (auto &g : gems) {
+        if (!g.active)
+          continue;
+        float minDistanceToCollectGems = 300;
+        float dx = player.x - g.x;
+        float dy = player.y - g.y;
+        float distance = std::sqrt(dx * dx + dy * dy);
+
+        if (distance < minDistanceToCollectGems) {
+          float force = std::clamp(distance, 300.0f, 1000.0f);
+          dx = dx / distance;
+          dy = dy / distance;
+          g.x = g.x + dx * force * dt;
+          g.y = g.y + dy * force * dt;
+        }
+      }
+
       //== Collision
       for (auto &b : bullets) {
         if (!b.active)
