@@ -1,6 +1,10 @@
 #pragma once
 #include "Animation.hpp"
 #include <SDL.h>
+#include <map>
+#include <string>
+
+enum class Direction { Left, Right, Up, Down };
 
 class Player {
 public:
@@ -14,7 +18,8 @@ public:
   int level{1};
   int xpToNextLevel{100};
   float attackInterval{1.0f};
-
+  Direction currentDir{Direction::Down};
+  std::map<Direction, Sprite> spriteLibrary;
   Animation idleAnim;
 
   void handleInput(float dt);

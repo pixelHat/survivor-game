@@ -1,17 +1,26 @@
 #include "Player.hpp"
 #include <algorithm>
+#include <iostream>
 
 void Player::handleInput(float dt) {
   const uint8_t *state = SDL_GetKeyboardState(nullptr);
 
-  if (state[SDL_SCANCODE_W])
+  if (state[SDL_SCANCODE_W]) {
     y -= speed * dt;
-  if (state[SDL_SCANCODE_S])
+    currentDir = Direction::Up;
+  }
+  if (state[SDL_SCANCODE_S]) {
     y += speed * dt;
-  if (state[SDL_SCANCODE_A])
+    currentDir = Direction::Down;
+  }
+  if (state[SDL_SCANCODE_A]) {
     x -= speed * dt;
-  if (state[SDL_SCANCODE_D])
+    currentDir = Direction::Left;
+  }
+  if (state[SDL_SCANCODE_D]) {
     x += speed * dt;
+    currentDir = Direction::Right;
+  }
 }
 
 void Player::update(float dt) {
@@ -26,11 +35,17 @@ void Player::update(float dt) {
     xpToNextLevel += 50;
     attackInterval *= 0.9f;
   }
+  if (spriteLibrary.contains(currentDir)) {
+    idleAnim.sprite = &spriteLibrary[currentDir];
+  }
   idleAnim.update(dt);
 }
 
 void Player::draw(SDL_Renderer *renderer) const {
   idleAnim.draw(renderer, (int)x, (int)y, 64, 64);
+  // if (auto it = animations.find(currentDir); it != animations.end()) {
+  //   it->second.draw(renderer, (int)x, (int)y, 64, 64);
+  // }
 }
 
 void Player::takeDamage(int damage) {

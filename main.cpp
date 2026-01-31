@@ -126,15 +126,36 @@ auto main(int argc, char *argv[]) -> int {
   auto currentState = GameState::Playing;
 
   // Load the player texture
-  SDL_Texture *playerTex =
+  SDL_Texture *texLeft =
+      IMG_LoadTexture(renderer, "assets/player/player_idle_left.png");
+  SDL_Texture *texRight =
+      IMG_LoadTexture(renderer, "assets/player/player_idle_right.png");
+  SDL_Texture *texUp =
+      IMG_LoadTexture(renderer, "assets/player/player_idle_back.png");
+  SDL_Texture *texDown =
       IMG_LoadTexture(renderer, "assets/player/player_idle_front.png");
-  Sprite playerSprite{.texture = playerTex,
-                      .frameWidth = 32,
-                      .frameHeight = 32,
-                      .totalFrames = 9};
-  Player player{.x = 400.0f,
-                .y = 300.0f,
-                .idleAnim = {.sprite = &playerSprite, .frameDuration = 0.12f}};
+
+  Player player{
+      .x = 400.0f,
+      .y = 300.0f,
+  };
+
+  player.spriteLibrary[Direction::Left] = {.texture = texLeft,
+                                           .frameWidth = 32,
+                                           .frameHeight = 32,
+                                           .totalFrames = 9};
+  player.spriteLibrary[Direction::Right] = {.texture = texRight,
+                                            .frameWidth = 32,
+                                            .frameHeight = 32,
+                                            .totalFrames = 9};
+
+  player.spriteLibrary[Direction::Up] = {
+      .texture = texUp, .frameWidth = 32, .frameHeight = 32, .totalFrames = 9};
+  player.spriteLibrary[Direction::Down] = {.texture = texDown,
+                                           .frameWidth = 32,
+                                           .frameHeight = 32,
+                                           .totalFrames = 9};
+  player.idleAnim.frameDuration = 0.12f;
 
   while (isRunning) {
     uint32_t currentFrameTime = SDL_GetTicks();
