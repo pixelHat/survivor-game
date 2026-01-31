@@ -1,7 +1,7 @@
 # Variables
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -Wextra $(shell sdl2-config --cflags --libs) $(shell sdl2-config --libs) -lSDL2_tff
-LIBS = $(shell sdl2-config --cflags --libs) $(shell sdl2-config --libs) -lSDL2_ttf
+CXXFLAGS = -std=c++20 -Wall -Wextra $(shell sdl2-config --cflags --libs) $(shell sdl2-config --libs) -lSDL2_tff -lSDL2_image
+LIBS = $(shell sdl2-config --cflags --libs) $(shell sdl2-config --libs) -lSDL2_ttf -lSDL2_image
 SRC = main.cpp Player.cpp Enemy.cpp
 OBJ = $(SRC:.cpp=.o)
 TARGET = game

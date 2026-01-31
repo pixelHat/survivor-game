@@ -1,11 +1,13 @@
 #include "Enemy.hpp"
 #include "Player.hpp"
 #include <SDL.h>
+#include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <algorithm>
 #include <format>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <random>
 #include <string>
 #include <vector>
@@ -95,6 +97,8 @@ auto main(int argc, char *argv[]) -> int {
     std::cout << "Failed to load font!" << std::endl;
   }
 
+  IMG_Init(IMG_INIT_PNG);
+
   int mouseX, mouseY;
   SDL_GetGlobalMouseState(&mouseX, &mouseY);
   auto pointDisplayIndex = SDL_Point{mouseX, mouseY};
@@ -114,16 +118,23 @@ auto main(int argc, char *argv[]) -> int {
   std::uniform_int_distribution<> disX(0, 800);
   std::uniform_int_distribution<> disY(0, 600);
 
-  Player player;
-  player.x = 400.0f;
-  player.y = 300.0f;
-
   std::vector<Projectile> bullets;
   bool isRunning{true};
   SDL_Event event;
 
   uint32_t lastFrameTime = SDL_GetTicks();
   auto currentState = GameState::Playing;
+
+  // Load the player texture
+  SDL_Texture *playerTex =
+      IMG_LoadTexture(renderer, "assets/player/player_idle_front.png");
+  Sprite playerSprite{.texture = playerTex,
+                      .frameWidth = 32,
+                      .frameHeight = 32,
+                      .totalFrames = 9};
+  Player player{.x = 400.0f,
+                .y = 300.0f,
+                .idleAnim = {.sprite = &playerSprite, .frameDuration = 0.12f}};
 
   while (isRunning) {
     uint32_t currentFrameTime = SDL_GetTicks();
@@ -179,7 +190,7 @@ auto main(int argc, char *argv[]) -> int {
       }
 
       enemySpawnTimer += dt;
-      if (enemySpawnTimer >= 0.5f) {
+      if (enemySpawnTimer >= 1.5f) {
         float x = disX(gen);
         float y = disY(gen);
         float dx = x - player.x;
@@ -299,7 +310,6 @@ auto main(int argc, char *argv[]) -> int {
       SDL_RenderFillRect(renderer, nullptr);
       drawText(renderer, font, "GAME OVER", 330, 250);
       drawText(renderer, font, "Press R to Restart", 280, 300);
-      drawText(renderer, font, "VTNC Guilherme!", 300, 350);
     }
     SDL_RenderPresent(renderer);
   }

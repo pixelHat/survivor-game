@@ -26,13 +26,11 @@ void Player::update(float dt) {
     xpToNextLevel += 50;
     attackInterval *= 0.9f;
   }
+  idleAnim.update(dt);
 }
 
 void Player::draw(SDL_Renderer *renderer) const {
-  SDL_Rect rect{
-      .x = static_cast<int>(x), .y = static_cast<int>(y), .w = 50, .h = 50};
-  SDL_SetRenderDrawColor(renderer, 0, 200, 255, 255);
-  SDL_RenderFillRect(renderer, &rect);
+  idleAnim.draw(renderer, (int)x, (int)y, 64, 64);
 }
 
 void Player::takeDamage(int damage) {

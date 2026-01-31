@@ -1,4 +1,5 @@
 #pragma once
+#include "Animation.hpp"
 #include <SDL.h>
 
 class Player {
@@ -13,6 +14,8 @@ public:
   int level{1};
   int xpToNextLevel{100};
   float attackInterval{1.0f};
+
+  Animation idleAnim;
 
   void handleInput(float dt);
   void update(float dt);
